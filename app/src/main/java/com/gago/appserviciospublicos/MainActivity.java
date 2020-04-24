@@ -1,18 +1,38 @@
 package com.gago.appserviciospublicos;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+import com.gago.appserviciospublicos.BasedeDatos.DBControlador;
+import com.gago.appserviciospublicos.Modelos.Servicio;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.Calendar;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    DBControlador controlador;
+
+    Spinner spTipoServicio;
+    EditText edMedidor, edDireccion;
+    TextView tvUnidad;
+
+    Button btGuardar, btCancelar;
+
+    int tipoDServicio;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,14 +41,66 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        spTipoServicio = findViewById(R.id.idSpinnerTipoServicio);
+        edMedidor = findViewById(R.id.idEdMedida);
+        edDireccion = findViewById(R.id.idEdDireccion);
+        tvUnidad = findViewById(R.id.idTvUnidad);
+        btGuardar = findViewById(R.id.idBtGuardar);
+        btCancelar = findViewById(R.id.idBtCancelar);
+
+        controlador = new DBControlador(getApplicationContext());
+
+        ArrayAdapter<CharSequence> otroAdacter = ArrayAdapter.createFromResource(this
+                , R.array.spinner_tipo_servicio, R.layout.support_simple_spinner_dropdown_item);
+        spTipoServicio.setAdapter(otroAdacter);
+
+        spTipoServicio.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                tipoDServicio = position;
+                switch (tipoDServicio) {
+                    case 0:
+                        tvUnidad.setText(view.getResources().getString(R.string.unidad_agua));
+                        break;
+                    case 1:
+                        tvUnidad.setText(view.getResources().getString(R.string.unidad_luz));
+                        break;
+                    case 2:
+                        tvUnidad.setText(view.getResources().getString(R.string.unidad_gas));
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
+
+        btGuardar.setOnClickListener(this);
+        btCancelar.setOnClickListener(this);
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.idBtGuardar:
+                Calendar calendar = Calendar.getInstance();
+                int medicion = edMedidor.getText().toString().isEmpty() ? 0 : Integer.parseInt(edMedidor.getText().toString());
+                Servicio servicio = new Servicio(edDireccion.getText().toString(), calendar, medicion, tipoDServicio);
+                long retorno = controlador.agregarRegistro(servicio);
+                if (retorno != -1) {
+                    Toast.makeText(v.getContext(), "registro guardado", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(v.getContext(), "registro fallido", Toast.LENGTH_SHORT).show();
+                }
+                limpiarCampo();
+                break;
+            case R.id.idBtCancelar:
+                limpiarCampo();
+                break;
+        }
     }
 
     @Override
@@ -46,10 +118,18 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_listado) {
+            Intent i = new Intent(this, ListadoActivity.class);
+            startActivity(i);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void limpiarCampo() {
+        edMedidor.setText("");
+        edDireccion.setText("");
+    }
+
 }
