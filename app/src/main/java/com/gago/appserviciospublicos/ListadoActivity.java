@@ -1,8 +1,14 @@
 package com.gago.appserviciospublicos;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -22,6 +28,8 @@ public class ListadoActivity extends AppCompatActivity {
 
     DBControlador controlador;
 
+    ListaAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,15 +41,51 @@ public class ListadoActivity extends AppCompatActivity {
 
         listaServicios = controlador.optenerRegistros();
 
-        ListaAdapter adapter = new ListaAdapter(getApplicationContext(), R.layout.lista_item_layout, listaServicios);
+        adapter = new ListaAdapter(getApplicationContext(), R.layout.lista_item_layout, listaServicios);
         lista.setAdapter(adapter);
 
-        lista.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(), "khe vergaa " + position, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        });
+        registerForContextMenu(lista);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.listado_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+
+        AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        switch (item.getItemId()) {
+            case R.id.idModificarRegistroMenu:
+                modificarRegistro(menuInfo.position);
+                return true;
+            case R.id.idBorrarRegistroMenu:
+                borrarRegistro(menuInfo.position);
+                return true;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    private void modificarRegistro(int posicion) {
+        Intent intent = new Intent(this, ModificarActivity.class);
+        intent.putExtra("indice", posicion);
+        startActivity(intent);
+        listaServicios = controlador.optenerRegistros();
+        adapter = new ListaAdapter(getApplicationContext(), R.layout.lista_item_layout, listaServicios);
+        lista.setAdapter(adapter);
+    }
+
+    private void borrarRegistro(int posicion) {
+        int retorno = controlador.borrarRegistro(listaServicios.get(posicion));
+        if (retorno == 1) {
+            Toast.makeText(getApplicationContext(), "registro eliminado", Toast.LENGTH_SHORT).show();
+            adapter = new ListaAdapter(getApplicationContext(), R.layout.lista_item_layout, listaServicios);
+            lista.setAdapter(adapter);
+        } else {
+            Toast.makeText(getApplicationContext(), "error al borrar", Toast.LENGTH_SHORT).show();
+        }
     }
 }

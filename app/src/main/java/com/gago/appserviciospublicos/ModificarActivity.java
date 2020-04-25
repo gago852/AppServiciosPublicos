@@ -2,8 +2,6 @@ package com.gago.appserviciospublicos;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,48 +11,62 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.gago.appserviciospublicos.BasedeDatos.DBControlador;
 import com.gago.appserviciospublicos.Modelos.Servicio;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class ModificarActivity extends AppCompatActivity implements View.OnClickListener {
+
+    TextView tvTitulo, tvUnidad;
+    EditText edDireccion, edMedidor;
+    Spinner spinnerTipoServicio;
+    Button btGuardar, btCancelar;
 
     DBControlador controlador;
 
-    Spinner spTipoServicio;
-    EditText edMedidor, edDireccion;
-    TextView tvUnidad;
-
-    Button btGuardar, btCancelar;
-
     int tipoDServicio;
-
+    int indice;
+    long id;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setContentView(R.layout.content_main);
 
-        spTipoServicio = findViewById(R.id.idSpinnerTipoServicio);
-        edMedidor = findViewById(R.id.idEdMedida);
-        edDireccion = findViewById(R.id.idEdDireccion);
+        tvTitulo = findViewById(R.id.idTvTitulo);
         tvUnidad = findViewById(R.id.idTvUnidad);
+        edDireccion = findViewById(R.id.idEdDireccion);
+        edMedidor = findViewById(R.id.idEdMedida);
+        spinnerTipoServicio = findViewById(R.id.idSpinnerTipoServicio);
         btGuardar = findViewById(R.id.idBtGuardar);
         btCancelar = findViewById(R.id.idBtCancelar);
 
+        tvTitulo.setText(getString(R.string.modificar_registro));
+
         controlador = new DBControlador(getApplicationContext());
+
+        Intent i = getIntent();
+        indice = i.getIntExtra("indice", 0);
+
+        ArrayList<Servicio> lista = controlador.optenerRegistros();
+
+        Servicio servicio = lista.get(indice);
+        id = servicio.getId();
+
+        edDireccion.setText(servicio.getDireccion());
+        edMedidor.setText(Integer.toString(servicio.getMedida()));
+
 
         ArrayAdapter<CharSequence> otroAdacter = ArrayAdapter.createFromResource(this
                 , R.array.spinner_tipo_servicio, R.layout.support_simple_spinner_dropdown_item);
-        spTipoServicio.setAdapter(otroAdacter);
-
-        spTipoServicio.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerTipoServicio.setAdapter(otroAdacter);
+        spinnerTipoServicio.setSelection(servicio.getTipoServicio());
+        spinnerTipoServicio.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 tipoDServicio = position;
@@ -79,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btGuardar.setOnClickListener(this);
         btCancelar.setOnClickListener(this);
-
     }
 
     @Override
@@ -88,48 +99,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.idBtGuardar:
                 Calendar calendar = Calendar.getInstance();
                 int medicion = edMedidor.getText().toString().isEmpty() ? 0 : Integer.parseInt(edMedidor.getText().toString());
-                Servicio servicio = new Servicio(edDireccion.getText().toString(), calendar, medicion, tipoDServicio);
-                long retorno = controlador.agregarRegistro(servicio);
-                if (retorno != -1) {
-                    Toast.makeText(v.getContext(), "registro guardado", Toast.LENGTH_SHORT).show();
+                Servicio servicio = new Servicio(id, edDireccion.getText().toString(), calendar, medicion, tipoDServicio);
+                int retorno = controlador.actualizarRegistro(servicio);
+                if (retorno == 1) {
+                    Toast.makeText(getApplicationContext(), "actualizacion exitosa", Toast.LENGTH_SHORT).show();
+                    finish();
                 } else {
-                    Toast.makeText(v.getContext(), "registro fallido", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "fallo en la actualizacion", Toast.LENGTH_SHORT).show();
                 }
-                limpiarCampo();
                 break;
             case R.id.idBtCancelar:
-                limpiarCampo();
+                finish();
                 break;
         }
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_listado) {
-            Intent i = new Intent(this, ListadoActivity.class);
-            startActivity(i);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void limpiarCampo() {
-        edMedidor.setText("");
-        edDireccion.setText("");
-    }
-
 }

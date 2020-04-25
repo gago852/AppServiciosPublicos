@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">App Servicios Publicos</string>
     <string name="action_listado">Listado de registros</string>
+    <string name="modificar_registro">Modificar Registro</string>
+    <string name="borrar_registro">Borrar Registro</string>
 
     <string name="direccion">Direccion:</string>
     <string name="medida">Valor del Medidor:</string>

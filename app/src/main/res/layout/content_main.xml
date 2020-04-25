@@ -7,7 +7,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/idTvTitulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -27,7 +27,7 @@
         android:layout_marginTop="50dp"
         android:text="@string/tipo_servicio"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/idTvTitulo" />
 
     <Spinner
         android:id="@+id/idSpinnerTipoServicio"
@@ -36,7 +36,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="50dp"
         app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/idTvTitulo" />
 
     <TextView
         android:id="@+id/textView3"
