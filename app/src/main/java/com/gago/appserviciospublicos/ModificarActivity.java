@@ -1,5 +1,6 @@
 package com.gago.appserviciospublicos;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -98,17 +99,23 @@ public class ModificarActivity extends AppCompatActivity implements View.OnClick
         switch (v.getId()) {
             case R.id.idBtGuardar:
                 Calendar calendar = Calendar.getInstance();
-                int medicion = edMedidor.getText().toString().isEmpty() ? 0 : Integer.parseInt(edMedidor.getText().toString());
-                Servicio servicio = new Servicio(id, edDireccion.getText().toString(), calendar, medicion, tipoDServicio);
-                int retorno = controlador.actualizarRegistro(servicio);
-                if (retorno == 1) {
-                    Toast.makeText(getApplicationContext(), "actualizacion exitosa", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(getApplicationContext(), "fallo en la actualizacion", Toast.LENGTH_SHORT).show();
+                try {
+                    int medicion = edMedidor.getText().toString().isEmpty() ? 0 : Integer.parseInt(edMedidor.getText().toString());
+                    Servicio servicio = new Servicio(id, edDireccion.getText().toString(), calendar, medicion, tipoDServicio);
+                    int retorno = controlador.actualizarRegistro(servicio);
+                    if (retorno == 1) {
+                        Toast.makeText(getApplicationContext(), "actualizacion exitosa", Toast.LENGTH_SHORT).show();
+                        setResult(Activity.RESULT_OK);
+                        finish();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "fallo en la actualizacion", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (NumberFormatException nuEx) {
+                    Toast.makeText(getApplicationContext(), "numero muy grande", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.idBtCancelar:
+                setResult(Activity.RESULT_CANCELED);
                 finish();
                 break;
         }

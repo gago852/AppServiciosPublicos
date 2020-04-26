@@ -87,15 +87,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.idBtGuardar:
                 Calendar calendar = Calendar.getInstance();
-                int medicion = edMedidor.getText().toString().isEmpty() ? 0 : Integer.parseInt(edMedidor.getText().toString());
-                Servicio servicio = new Servicio(edDireccion.getText().toString(), calendar, medicion, tipoDServicio);
-                long retorno = controlador.agregarRegistro(servicio);
-                if (retorno != -1) {
-                    Toast.makeText(v.getContext(), "registro guardado", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(v.getContext(), "registro fallido", Toast.LENGTH_SHORT).show();
+                try {
+                    int medicion = edMedidor.getText().toString().isEmpty() ? 0 : Integer.parseInt(edMedidor.getText().toString());
+                    Servicio servicio = new Servicio(edDireccion.getText().toString(), calendar, medicion, tipoDServicio);
+                    long retorno = controlador.agregarRegistro(servicio);
+                    if (retorno != -1) {
+                        Toast.makeText(v.getContext(), "registro guardado", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(v.getContext(), "registro fallido", Toast.LENGTH_SHORT).show();
+                    }
+                    limpiarCampo();
+                } catch (NumberFormatException numEx) {
+                    Toast.makeText(getApplicationContext(), "numero muy grande", Toast.LENGTH_SHORT).show();
                 }
-                limpiarCampo();
                 break;
             case R.id.idBtCancelar:
                 limpiarCampo();
