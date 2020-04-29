@@ -1,5 +1,8 @@
 package com.gago.appserviciospublicos.BasedeDatos;
 
+/**
+ * clase auxiliar que representa el modelo de la base de datos
+ */
 public class ModeloBD {
 
     public static final String NOMBRE_DB = "serviciosPublicos";

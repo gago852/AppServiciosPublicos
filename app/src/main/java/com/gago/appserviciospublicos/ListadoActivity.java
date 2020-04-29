@@ -56,7 +56,8 @@ public class ListadoActivity extends AppCompatActivity implements LifecycleObser
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        //metodo que se ejecuta cuando se recibe un resultado de otra actividad
+        //si la actividad fue exitosa se actualiza la lista si no se muestra un mensaje
         if (requestCode == 2) {
             if (resultCode == Activity.RESULT_OK) {
                 ArrayList<Servicio> listaServis = controlador.optenerRegistros();
@@ -69,6 +70,7 @@ public class ListadoActivity extends AppCompatActivity implements LifecycleObser
         }
     }
 
+    //menu contextual para los items de la lista
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -93,11 +95,14 @@ public class ListadoActivity extends AppCompatActivity implements LifecycleObser
 
     private void modificarRegistro(int posicion) {
         Intent intent = new Intent(this, ModificarActivity.class);
+        //enviamos la posicion del objeto en la lista
         intent.putExtra("indice", posicion);
         startActivityForResult(intent, 2);
     }
 
     private void borrarRegistro(int posicion) {
+        //con la posicion del objeto en la lista obtenemos el objeto y lo mandamos al controlador para borrarlo
+        //luego actualizamos la lista
         int retorno = controlador.borrarRegistro(listaServicios.get(posicion));
         if (retorno == 1) {
             Toast.makeText(getApplicationContext(), "registro eliminado", Toast.LENGTH_SHORT).show();

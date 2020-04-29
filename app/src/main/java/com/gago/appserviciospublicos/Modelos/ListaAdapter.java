@@ -14,6 +14,9 @@ import com.gago.appserviciospublicos.R;
 
 import java.util.ArrayList;
 
+/**
+ * clase adaptador personalizado para ListView
+ */
 public class ListaAdapter extends ArrayAdapter<Servicio> {
 
     private ArrayList<Servicio> lista;

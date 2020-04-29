@@ -33,7 +33,11 @@ public class ModificarActivity extends AppCompatActivity implements View.OnClick
     int tipoDServicio;
     int indice;
     long id;
-
+    /*
+    esta actividad fue creada manualmente y representa la actividad para modificar un registro de la base de datos
+    lo que hacemos es crear una clase vacia de java luego heredamos de appCompatActivity y sobrescribimos
+    el metodo onCreate despues asignamos la vista al layout de registro para poder reutilizar esa interfaz
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +55,7 @@ public class ModificarActivity extends AppCompatActivity implements View.OnClick
 
         controlador = new DBControlador(getApplicationContext());
 
+        //obtenemos el indice del registro y mostramos los datos en pantalla
         Intent i = getIntent();
         indice = i.getIntExtra("indice", 0);
 
@@ -98,6 +103,8 @@ public class ModificarActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.idBtGuardar:
+                //para guardar instanciamos un Calendar con la fecha y hora actual y creamos un objeto Servicio para despues actualizar
+                //el registro dejamos un mensaje le decimos al intent que fue exitosa y finalizamos la actividad si no mostramos mensaje de error
                 Calendar calendar = Calendar.getInstance();
                 try {
                     int medicion = edMedidor.getText().toString().isEmpty() ? 0 : Integer.parseInt(edMedidor.getText().toString());
