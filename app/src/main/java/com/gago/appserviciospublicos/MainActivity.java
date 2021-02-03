@@ -1,7 +1,10 @@
 package com.gago.appserviciospublicos;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +22,9 @@ import androidx.appcompat.widget.Toolbar;
 import com.gago.appserviciospublicos.BasedeDatos.DBControlador;
 import com.gago.appserviciospublicos.Modelos.Servicio;
 
+import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -61,12 +66,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 switch (tipoDServicio) {
                     case 0:
                         tvUnidad.setText("m^3");
+                        Log.i("itemselected", parent.getSelectedItem().toString());
                         break;
                     case 1:
                         tvUnidad.setText("kw/h");
+                        Log.i("itemselected", parent.getSelectedItem().toString());
                         break;
                     case 2:
                         tvUnidad.setText("cc");
+                        Log.i("itemselected", parent.getSelectedItem().toString());
                         break;
                 }
             }
@@ -77,8 +85,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+
         btGuardar.setOnClickListener(this);
         btCancelar.setOnClickListener(this);
+
+        try {
+            Geocoder geocoder = new Geocoder(getApplicationContext());
+            List<Address> direcciones = geocoder.getFromLocationName("estadio luis carlos galan", 1);
+            Address add = direcciones.get(0);
+//            Toast.makeText(getApplicationContext(), add.getLocality(), Toast.LENGTH_SHORT).show();
+            Log.e("geocoder1", add.getLocality() != null ? add.getLocality() : "desconocido");
+            Log.e("geocoder", add.getLatitude() + "," + add.getLongitude());
+        } catch (IOException e) {
+            Log.e("geocoder", e.getLocalizedMessage());
+        }
+
 
     }
 
